@@ -14,18 +14,22 @@ def fetch_devices():
     la variable global."""
     global devices
     connection_string = 'DRIVER={ODBC Driver 17 for SQL Server};SERVER=LAPTOP-LU8KOHGC\SQLEXPRESS02;DATABASE=DispositivosMuni;Trusted_Connection=yes;'
+    
     try:
         conn = pyodbc.connect(connection_string)
         cursor = conn.cursor()
-        # Execute a query
-        cursor.execute("SELECT nombre, ip FROM DispositivosMuni")
+        cursor.execute("SELECT nombre, ip, localizacion FROM DispositivosMuni")
+
+        """status puede ser: Desconocido, Activo, Caido
+            active puede ser: Perdido/s, Econtrado"""
 
         devices = [{
             "name": item.nombre,
             "ip": item.ip,
-            "status": "Desconocido",
-            "active": "Perdido/s",
-            "down_count": 0  
+            "localizacion": item.localizacion,
+            "status": "Desconocido",    
+            "active": "Perdido/s",      
+            "down_count": 0
         } for item in cursor]
     except pyodbc.Error as ex:
         sqlstate = ex.args[0]
@@ -60,7 +64,7 @@ def check_status_and_notify_sync(socketio):
     global devices
     
     if not devices:
-        fetch_devices_from_api()
+        fetch_devices()
 
     try:
         loop = asyncio.get_event_loop()
@@ -82,18 +86,22 @@ def check_status_and_notify_sync(socketio):
         devices[i]['status'] = new_status
         if new_status == "Activo":
             devices[i]['active'] = "Encontrado" 
+            devices[i]['down_count'] = 0
+
         if devices[i]["active"] == "Encontrado" and new_status != "Activo": 
             devices[i]["status"] = "Caido"
-
-        if new_status == "Caido" and devices[i]['active'] == "Encontrado":
+        # 
+        if devices[i]["status"] == "Caido" and devices[i]['active'] == "Encontrado":
             devices[i]['down_count'] += 1
             print(devices[i]["name"], "count_down", devices[i]["down_count"])
         else:
             devices[i]['down_count'] = 0
         
-        if devices[i]['down_count'] == 8:
+        if devices[i]['down_count'] == 10:
             off_devices_for_email.append(devices[i])
             devices[i]['down_count'] = 0
+            devices[i]['active'] = "Perdido/s"
+            devices[i]['status'] = "Desconocido"
 
     """Aqui se mandan los nuevos estados al frontend"""
     socketio.start_background_task(target=lambda: socketio.emit('status_update', {'devices': devices}))
