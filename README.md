@@ -34,38 +34,39 @@ Este proyecto de backend es el cerebro detrás del sistema de monitoreo. Su func
   ```sh
     pip install Flask Flask-SocketIO requests google-api-python-client google-auth-oauthlib
    ```
+### Configuracion de la API de Gmail y credenciales de Google Cloud
+Para que el backend pueda enviar correos de notificación, necesitas configurar la Gmail API. Sigue estos pasos para obtener las credenciales necesarias, las cuales no están incluidas en el repositorio por motivos de seguridad.
 
-3. Configuración del correo electrónico (Gmail API)
-Para que el backend pueda enviar correos de notificación, necesitas configurar la Gmail API.
+⚠️ Importante: Debes usar una cuenta de Google Cloud de empresa para este proyecto, ya que las cuentas personales pueden tener restricciones que impidan la correcta autenticación.
 
-Ve a la Google Cloud Console.
+1. Ve a la Google Cloud Console.
 
-Crea un nuevo proyecto o selecciona uno existente.
+2. Crea un nuevo proyecto o selecciona uno existente.
 
-Habilita la API de Gmail.
+3. Habilita la API de Gmail.
 
-En la sección "Credenciales", crea una credencial de tipo ID de cliente de OAuth.
+4. En la sección "Credenciales", crea una credencial de tipo ID de cliente de OAuth.
 
-Configura la pantalla de consentimiento de OAuth con la información de tu aplicación.
+5. Configura la pantalla de consentimiento de OAuth con la información de tu aplicación.
 
-Descarga el archivo credentials.json y colócalo en la misma carpeta que el archivo principal de tu proyecto.
+6. Descarga el archivo credentials.json y colócalo en la misma carpeta que el archivo principal del proyecto.
 
 La primera vez que ejecutes la aplicación, se abrirá una ventana del navegador para que inicies sesión en tu cuenta de Gmail y otorgues los permisos necesarios. Esto generará automáticamente el archivo token.json para futuras autenticaciones.
 
 <!-- MODO DE USO -->
 
 ## Modo de uso
-### Una vez configurado, el backend funcionará de la siguiente manera:
+### Ejecucion y despliegue local:
 
-Inicia la aplicación Python desde tu terminal:
+Este proyecto está diseñado para funcionar de forma local en el puerto 5000. El servidor del backend también sirve el frontend, lo que significa que no necesitas iniciar un servidor separado para el frontend.
+
+1. Una vez tengas las credenciales configuradas, inicia la aplicación Python desde tu terminal:
    ```sh
       python app.py
    ```
+2. Acceso local: El servidor se ejecutará en http://localhost:5000. Al acceder a esta dirección en tu navegador, el backend cargará la interfaz de usuario que se encuentra en una carpeta local (/Front o el nombre que le pongas a la carpeta del frontend).
 
-El servidor se ejecutará en http://localhost:5000.
-
-El sistema comenzará a hacer pings a los dispositivos en un hilo en segundo plano.
-
-Si un dispositivo deja de responder, se enviará una notificación por correo electrónico.
-
-El estado de cada dispositivo se actualizará en tiempo real y se transmitirá a través de WebSockets, permitiendo que el frontend refleje los cambios al instante.
+3. Funcionamiento en tiempo real:
+* El sistema comenzará a hacer pings a los dispositivos en un hilo en segundo plano.
+* Si un dispositivo deja de responder, se enviará una notificación por correo electrónico.
+* El estado de cada dispositivo se actualizará en tiempo real y se transmitirá a través de WebSockets, permitiendo que el frontend refleje los cambios al instante.
