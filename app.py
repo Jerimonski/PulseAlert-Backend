@@ -1,4 +1,6 @@
 import os
+import time
+import threading
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit
@@ -11,8 +13,7 @@ from device_manager import devices, fetch_devices, check_status_and_notify_sync
 
 app = Flask(__name__, static_folder='Front', static_url_path='')
 CORS(app)
-socketio = SocketIO(app, cors_allowed_origins="*")
-
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
 connection_string = 'DRIVER={ODBC Driver 17 for SQL Server};SERVER=LAPTOP-LU8KOHGC\\SQLEXPRESS02;DATABASE=DispositivosMuni;Trusted_Connection=yes;'
 def get_db_cursor():
     try:
@@ -22,7 +23,6 @@ def get_db_cursor():
         print(f"Error de conexión a la base de datos: {ex}")
         return None, None
 
-# AÑADIDO: Ruta para servir el frontend
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve_frontend(path):
@@ -31,7 +31,6 @@ def serve_frontend(path):
     else:
         return send_from_directory(app.static_folder, 'index.html')
 
-# MODIFICADO: Mueve el endpoint de la API a una ruta específica, ej. '/api/devices'
 @app.route('/devices', methods=['GET'])
 def get_devices():
     return jsonify(devices)
@@ -55,7 +54,6 @@ def add_devices():
         if conn:
             conn.close()
 
-# MODIFICADO: Cambia las rutas de actualización y borrado a '/api/devices/<string:ip>'
 @app.route('/api/devices/<string:ip>', methods=['PATCH'])
 def update_device(ip):
     data = request.get_json()
@@ -125,10 +123,15 @@ def handle_connect():
     if devices:
         emit('status_update', {'devices': devices}, room=request.sid)
 
+def open_browser():
+    time.sleep(1)
+    webbrowser.open_new("http://localhost:5000")
+
 if __name__ == '__main__':
     get_gmail_service()
     fetch_devices()
 
+    threading.Thread(target=open_browser).start()
     """BackgroundSheduler sirve para poder definir un intervalo
         de mandado de datos.
         scheduler para iniciar el software"""
