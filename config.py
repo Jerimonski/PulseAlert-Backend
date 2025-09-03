@@ -1,8 +1,8 @@
 import platform
 
-SCOPES = ['https://www.googleapis.com/auth/gmail.send']
-EMAIL_SENDER = "jeremy.amaru.ayaviri@alumnos.uta.cl"
-EMAIL_RECEIVER = "jeremy.amaru.ayaviri@alumnos.uta.cl"
+SCOPES = ['googleApi']
+EMAIL_SENDER = "example@gmail.com"
+EMAIL_RECEIVER = "example@gmail.com"
 
 PING_COMMAND = ["ping"]
 if platform.system().lower() == "windows":
