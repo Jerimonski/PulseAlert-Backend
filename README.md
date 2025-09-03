@@ -70,3 +70,6 @@ Este proyecto está diseñado para funcionar de forma local en el puerto 5000. E
 * El sistema comenzará a hacer pings a los dispositivos en un hilo en segundo plano.
 * Si un dispositivo deja de responder, se enviará una notificación por correo electrónico.
 * El estado de cada dispositivo se actualizará en tiempo real y se transmitirá a través de WebSockets, permitiendo que el frontend refleje los cambios al instante.
+
+### Base de datos
+La bd esta creada en SQL 2019 y compuesta por 1 tabla con las siguientes columnas nombre, ip, id y localizacion. Esta debe ser levantada de manera local y en caso de configuraciones como la eliminacion o edicion de columnas, se deben actualizar tanto las querys del back como las conexiones del front.
